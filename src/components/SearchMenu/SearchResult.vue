@@ -6,7 +6,9 @@ interface Props {
   list: RouteRecordRaw[]
   isPressUpOrDown: boolean
 }
-
+interface IDefineExposeProps {
+  getScrollTop(index: number): number
+}
 /** 选中的菜单 */
 const modelValue = defineModel<RouteRecordName | undefined>({ required: true })
 const props = defineProps<Props>()
@@ -60,7 +62,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", getScrollbarHeight)
 })
 
-defineExpose({ getScrollTop })
+defineExpose<IDefineExposeProps>({ getScrollTop })
 </script>
 
 <template>

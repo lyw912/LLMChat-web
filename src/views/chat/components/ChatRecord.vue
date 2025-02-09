@@ -4,8 +4,8 @@ import systemPhoto from "@/assets/layouts/icons8-chatgpt-96.png"
 import { EChatType } from "./Enum"
 
 export interface IChatRecord {
-  type: EChatType
-  id: number
+  role: EChatType
+  message_id: string
   content: string
   time: string
 }
@@ -21,22 +21,27 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <div :class="{ 'chat-record': true, 'chat-question': props.data[0].type === EChatType.USER }">
-    <el-avatar :size="24" :src="props.data[0].type === 'USER' ? userStore.photo : systemPhoto"
-      >{{ data[0].type === "USER" ? userStore.username?.[0] : EChatType.SYSTEM }}
+  <div :class="{ 'chat-record': true, 'chat-question': props.data[0].role === EChatType.USER }">
+    <el-avatar :size="24" :src="props.data[0].role === EChatType.USER ? userStore.photo : systemPhoto"
+      >{{ data[0].role === EChatType.USER ? userStore.username?.[0] : EChatType.SYSTEM }}
     </el-avatar>
     <div class="chat-content">
       <el-text type="info" class="time">{{ props.data[0].time }}</el-text>
-      {{ props.data[0].content }}
+      <pre>
+        {{ props.data[0].content }}
+      </pre>
     </div>
   </div>
-  <div :class="{ 'chat-record': true, 'chat-question': props.data[1].type === EChatType.USER }">
-    <el-avatar :size="24" :src="props.data[1].type === 'USER' ? userStore.photo : systemPhoto"
-      >{{ data[1].type === "USER" ? userStore.username?.[0] : EChatType.SYSTEM }}
+  <div :class="{ 'chat-record': true, 'chat-question': props.data[1].role === EChatType.USER }">
+    <el-avatar :size="24" :src="props.data[1].role === EChatType.USER ? userStore.photo : systemPhoto"
+      >{{ data[1].role === EChatType.USER ? userStore.username?.[0] : EChatType.SYSTEM }}
     </el-avatar>
     <div class="chat-content">
       <el-text type="info" class="time">{{ props.data[1].time }}</el-text>
-      {{ props.data[1].content }}
+      <!-- {{ props.data[1].content }} -->
+      <pre>
+        {{ props.data[1].content }}
+      </pre>
     </div>
   </div>
 </template>
@@ -68,6 +73,12 @@ const props = defineProps<Props>()
 
     &:hover .time {
       display: block;
+    }
+
+    pre {
+      overflow: hidden;
+      white-space: pre-line;
+      margin: 0 auto;
     }
   }
 }
