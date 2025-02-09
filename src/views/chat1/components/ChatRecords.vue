@@ -6,8 +6,8 @@ import { type ChatRequestData, IMessageData } from "@/api/chat/types/chat"
 import { conversationsConversationsIdMessagesApi } from "@/api/conversations"
 import type * as Conversations from "@/api/conversations/types/conversations"
 import ChatRecord from "./ChatRecord.vue"
-import { ElMessage } from "element-plus"
 import GPTModelSelect from "@/components/GPTModelSelect/index.vue"
+import { ElMessage } from "element-plus"
 
 interface Props {
   onSetChatTitle(id: string, name: string): void
@@ -120,7 +120,15 @@ defineExpose<IChatRecordsRef>({
     <div class="chat-records" ref="chatRecordsRef">
       <ChatRecord v-for="(record, index) in chatRecords" :key="index" :data="record" />
     </div>
-    <QuillEditor class="quill-editor" ploherholder="Enter发送；Shift+Enter换行" :value="inputValue" :onEnter="onSend" />
+    <div>
+      <el-button class="new-chat">新建对话</el-button>
+      <QuillEditor
+        class="quill-editor"
+        ploherholder="Enter发送；Shift+Enter换行"
+        :value="inputValue"
+        :onEnter="onSend"
+      />
+    </div>
   </div>
 </template>
 
@@ -137,6 +145,10 @@ defineExpose<IChatRecordsRef>({
     /* padding: 8px; */
     overflow: auto;
     padding: 24px 0;
+  }
+
+  .new-chat {
+    margin-bottom: 8px;
   }
 
   .quill-editor {
