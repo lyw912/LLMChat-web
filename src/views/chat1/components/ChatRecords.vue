@@ -20,7 +20,19 @@ const chatStore = useChatStore()
 const props = defineProps<Props>()
 let conversation_id = ""
 let conversation_name = ""
-const chatRecords = ref<Conversations.ConversationsConversationsIdMessagesResponseData[]>([])
+const chatRecords = ref<Conversations.ConversationsConversationsIdMessagesResponseData[]>([
+  {
+    id: "string", // 消息ID
+    conversation_id: "string", // 会话ID
+    chat_type: "string", // 会话类型
+    query: "string", // 用户输入
+    response: "[aa](https://baidu.com/)", // AI回答
+    meta_data: {},
+    feedback_souce: 1,
+    feedback_reason: "string",
+    create_time: "string"
+  }
+])
 const chatRecordsRef = ref<HTMLDivElement | null>(null)
 const inputValue = ref<string>("")
 
