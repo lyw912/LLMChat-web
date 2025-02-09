@@ -1,5 +1,4 @@
 import { type Ref, ref, watch } from "vue"
-import { pinia } from "@/store"
 import { defineStore } from "pinia"
 import { type LayoutSettings, layoutSettings } from "@/config/layouts"
 import { setConfigLayout } from "@/utils/cache/local-storage"
@@ -39,11 +38,3 @@ export const useSettingsStore = defineStore("settings", () => {
 
   return state
 })
-
-/**
- * 在 SPA 应用中可用于在 pinia 实例被激活前使用 store
- * 在 SSR 应用中可用于在 setup 外使用 store
- */
-export function useSettingsStoreHook() {
-  return useSettingsStore(pinia)
-}

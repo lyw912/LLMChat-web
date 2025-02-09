@@ -1,5 +1,4 @@
 import { ref, watchEffect } from "vue"
-import { pinia } from "@/store"
 import { defineStore } from "pinia"
 import { useSettingsStore } from "./settings"
 import { type RouteLocationNormalized } from "vue-router"
@@ -94,11 +93,3 @@ export const useTagsViewStore = defineStore("tags-view", () => {
     delAllCachedViews
   }
 })
-
-/**
- * 在 SPA 应用中可用于在 pinia 实例被激活前使用 store
- * 在 SSR 应用中可用于在 setup 外使用 store
- */
-export function useTagsViewStoreHook() {
-  return useTagsViewStore(pinia)
-}
