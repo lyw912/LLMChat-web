@@ -3,7 +3,7 @@ import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { type FormInstance, type FormRules } from "element-plus"
-import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
+import { User, Lock } from "@element-plus/icons-vue" // Key, Picture, Loading
 import { getLoginCodeApi } from "@/api/login"
 import { type LoginRequestData } from "@/api/login/types/login"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
@@ -26,6 +26,7 @@ const loginFormData: LoginRequestData = reactive({
   password: "12345678",
   code: ""
 })
+const isRegister = ref<boolean>(false)
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
@@ -57,6 +58,32 @@ const handleLogin = () => {
     }
   })
 }
+
+const handleRegister = async () => {
+  loginFormRef.value?.validate((valid: boolean, fields) => {
+    if (valid) {
+      loading.value = true
+      console.log(loginFormRef)
+      useUserStore()
+        .register(loginFormData)
+        .then(() => {
+          // router.push({ path: "/" })
+          isRegister.value = false
+        })
+        .catch(() => {
+          createCode()
+          loginFormData.password = ""
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    } else {
+      console.error("表单校验不通过", fields)
+      loading.value = false
+    }
+  })
+}
+
 /** 创建验证码 */
 const createCode = () => {
   // 先清空验证码的输入
@@ -78,7 +105,7 @@ createCode()
     <Owl :close-eyes="isFocus" />
     <div class="login-card">
       <div class="title">
-        <img src="@/assets/layouts/logo-text-2.png" />
+        <!-- <img src="@/assets/layouts/logo-text-2.png" /> -->
       </div>
       <div class="content">
         <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
@@ -105,7 +132,7 @@ createCode()
               @focus="handleFocus"
             />
           </el-form-item>
-          <el-form-item prop="code">
+          <!-- <el-form-item prop="code">
             <el-input
               v-model.trim="loginFormData.code"
               placeholder="验证码"
@@ -130,9 +157,16 @@ createCode()
                 </el-image>
               </template>
             </el-input>
-          </el-form-item>
-          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
+          </el-form-item> -->
+          <el-button v-if="isRegister" :loading="loading" type="primary" size="large" @click.prevent="handleRegister"
+            >注 册</el-button
+          >
+          <el-button v-else :loading="loading" type="primary" size="large" @click.prevent="handleLogin"
+            >登 录</el-button
+          >
         </el-form>
+        <el-link v-if="isRegister" class="register-link" @click="isRegister = !isRegister">去登陆</el-link>
+        <el-link v-else class="register-link" @click="isRegister = !isRegister">去注册</el-link>
       </div>
     </div>
   </div>
@@ -163,7 +197,8 @@ createCode()
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 150px;
+      // height: 150px;
+      height: 48px;
       img {
         height: 100%;
       }
@@ -185,6 +220,10 @@ createCode()
       .el-button {
         width: 100%;
         margin-top: 10px;
+      }
+
+      .register-link {
+        margin-top: 4px;
       }
     }
   }

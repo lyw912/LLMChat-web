@@ -41,7 +41,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           changeOrigin: true
         },
         "/api": {
-          target: "/",
+          target: "http://127.0.0.1:16000",
           ws: false,
           /** 是否允许跨域 */
           changeOrigin: true
