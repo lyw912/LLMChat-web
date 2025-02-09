@@ -6,6 +6,7 @@ export enum DeviceEnum {
 
 /** 布局模式 */
 export enum LayoutModeEnum {
+  Chat = "chat",
   Left = "left",
   Top = "top",
   LeftTop = "left-top"
