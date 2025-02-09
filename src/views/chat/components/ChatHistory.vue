@@ -6,17 +6,17 @@ import { usersUserIdConversations } from "@/api/users"
 import type * as Users from "@/api/users/types/users"
 import { conversationsApi } from "@/api/conversations"
 import { useUserStore } from "@/store/modules/user"
+import { useChatStore } from "@/store/modules/chat"
 
 interface Props {
   onSelectChatHistory?(id: string, name?: string): void
 }
 
 const userStore = useUserStore()
+const chatStore = useChatStore()
 const props = defineProps<Props>()
 const historyListUlRef = ref<HTMLDivElement | null>(null)
-const historys = ref<Users.UsersUserIdConversationsResponseData[]>([
-  { id: "conv456", name: "学习对话", chat_type: "", create_time: "" }
-])
+const historys = ref<Users.UsersUserIdConversationsResponseData[]>([])
 const hoverId = ref<string>()
 const selectId = ref<string>()
 const editChatInfo = reactive<Users.UsersUserIdConversationsResponseData>({
@@ -47,15 +47,15 @@ function onScrollTop() {
 // 新建对话
 async function onCreateNewChat() {
   const name = "新对话"
-  const chat_type = ""
-  const id = await conversationsApi({ user_id: userStore.username, name, chat_type })
+  const chat_type = chatStore.prompt_name
+  const res = await conversationsApi({ user_id: userStore.username, name, chat_type })
   historys.value.unshift({
-    id,
+    id: res.id,
     name,
     chat_type,
     create_time: ""
   })
-  onClickChatHistory(id, name)
+  onClickChatHistory(res.id, name)
   onScrollTop()
 }
 
