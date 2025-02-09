@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
 import { createTableDataApi, deleteTableDataApi, updateTableDataApi, getTableDataApi } from "@/api/table"
-import { type CreateOrUpdateTableRequestData, type TableData } from "@/api/table/types/table"
+import { type CreateOrUpdateTableRequestData, type GetTableData } from "@/api/table/types/table"
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
@@ -51,7 +51,7 @@ const resetForm = () => {
 //#endregion
 
 //#region 删
-const handleDelete = (row: TableData) => {
+const handleDelete = (row: GetTableData) => {
   ElMessageBox.confirm(`正在删除用户：${row.username}，确认删除？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -66,14 +66,14 @@ const handleDelete = (row: TableData) => {
 //#endregion
 
 //#region 改
-const handleUpdate = (row: TableData) => {
+const handleUpdate = (row: GetTableData) => {
   dialogVisible.value = true
   formData.value = cloneDeep(row)
 }
 //#endregion
 
 //#region 查
-const tableData = ref<TableData[]>([])
+const tableData = ref<GetTableData[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 const searchData = reactive({
   username: "",
@@ -148,18 +148,16 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
           <el-table-column prop="username" label="用户名" align="center" />
           <el-table-column prop="roles" label="角色" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.roles === 'admin'" type="primary" effect="plain" disable-transitions>
-                admin
-              </el-tag>
-              <el-tag v-else type="warning" effect="plain" disable-transitions>{{ scope.row.roles }}</el-tag>
+              <el-tag v-if="scope.row.roles === 'admin'" type="primary" effect="plain">admin</el-tag>
+              <el-tag v-else type="warning" effect="plain">{{ scope.row.roles }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="phone" label="手机号" align="center" />
           <el-table-column prop="email" label="邮箱" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
-              <el-tag v-if="scope.row.status" type="success" effect="plain" disable-transitions>启用</el-tag>
-              <el-tag v-else type="danger" effect="plain" disable-transitions>禁用</el-tag>
+              <el-tag v-if="scope.row.status" type="success" effect="plain">启用</el-tag>
+              <el-tag v-else type="danger" effect="plain">禁用</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="createTime" label="创建时间" align="center" />
