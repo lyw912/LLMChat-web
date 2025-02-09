@@ -7,6 +7,7 @@ import { conversationsConversationsIdMessagesApi } from "@/api/conversations"
 import type * as Conversations from "@/api/conversations/types/conversations"
 import ChatRecord from "./ChatRecord.vue"
 import { ElMessage } from "element-plus"
+import GPTModelSelect from "@/components/GPTModelSelect/index.vue"
 
 interface Props {
   onSetChatTitle(id: string, name: string): void
@@ -115,6 +116,7 @@ defineExpose<IChatRecordsRef>({
 
 <template>
   <div class="main-center">
+    <GPTModelSelect />
     <div class="chat-records" ref="chatRecordsRef">
       <ChatRecord v-for="(record, index) in chatRecords" :key="index" :data="record" />
     </div>
