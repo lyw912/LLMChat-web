@@ -6,7 +6,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source"
 /** 聊天对话接口 */
 // export function chatApi(data: Chat.ChatRequestData) {
 //   return request<Chat.ChatResponseData>({
-//     url: "http://192.168.110.131:8000/api/chat",
+//     url: "http://127.0.0.1:16000/api/chat",
 //     method: "post",
 //     data
 //   })
@@ -16,7 +16,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source"
 export function chatApi(data: Chat.ChatRequestData, options?: Chat.ChatFetchEventOptions) {
   const ctrl = new AbortController()
   const bodyStr = JSON.stringify(data)
-  // http://192.168.110.131:8000
+  // http://127.0.0.1:16000
   fetchEventSource("/api/chat", {
     method: "POST",
     headers: {
