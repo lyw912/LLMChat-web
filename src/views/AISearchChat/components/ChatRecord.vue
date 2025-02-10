@@ -3,6 +3,8 @@ import { useUserStore } from "@/store/modules/user";
 import type * as Conversations from "@/api/conversations/types/conversations";
 import systemPhoto from "@/assets/layouts/icons8-chatgpt-96.png";
 import { EChatType } from "./Enum";
+// import QuillEditor from "@/components/RichTextEditor/index.vue"
+import MdPreview from "@/components/Markdown/MdPreview/index.vue";
 
 export interface IChatRecord {
     role: EChatType;
@@ -26,36 +28,33 @@ const props = defineProps<Props>();
         <el-avatar :size="24" :src="userStore.photo">{{ userStore.username?.[0] }} </el-avatar>
         <div class="chat-content">
             <el-text type="info" class="time">{{ props.data.create_time }}</el-text>
-            <pre>
-              {{ props.data.query }}
-            </pre>
+            <MdPreview :moduleValue="props.data.query" />
         </div>
     </div>
     <div :class="{ 'chat-record': true, 'chat-question': false }">
         <el-avatar :size="24" :src="systemPhoto">{{ EChatType.SYSTEM }} </el-avatar>
         <div :class="{ 'chat-content': true, 'chat-error': !props.data.response }">
             <el-text type="info" class="time">{{ props.data.create_time }}</el-text>
-            <!-- {{ props.data[1].content }} -->
-            <pre>
-              {{
-                    props.data.response ||
-                    "An error occurred. If this issue persists please contact us through our help center at fufan.chat.com."
-                }}
-            </pre>
+            <div class="ai-search-content">22222</div>
+            <MdPreview :moduleValue="props.data.response" />
         </div>
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .chat-record {
     display: flex;
     gap: 8px;
     margin-top: 24px;
 
+    :deep(.el-avatar) {
+        background-color: inherit;
+    }
+
     .chat-content {
         background-color: var(--el-bg-color);
-        border-radius: 4px;
-        padding: 12px 16px;
+        border-radius: 8px;
+        /* padding: 12px 16px; */
         position: relative;
         width: fit-content;
         max-width: 70%;
@@ -75,10 +74,8 @@ const props = defineProps<Props>();
             display: block;
         }
 
-        pre {
-            overflow: hidden;
-            white-space: pre-line;
-            margin: 0 auto;
+        .ai-search-content {
+            margin: 16px 16px 0;
         }
     }
 

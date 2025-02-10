@@ -7,6 +7,7 @@ import type * as Users from "@/api/users/types/users";
 import { conversationsApi } from "@/api/conversations";
 import { useUserStore } from "@/store/modules/user";
 import { useChatStore } from "@/store/modules/chat";
+import { useChatHistoryStore } from "@/store/modules/chatHistory";
 
 interface Props {
     onSelectChatHistory?(id: string, name?: string): void;
@@ -18,6 +19,7 @@ export interface IChatHistoryRef {
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const chatHistoryStore = useChatHistoryStore();
 const props = defineProps<Props>();
 const historyListUlRef = ref<HTMLDivElement | null>(null);
 const historys = ref<Users.UsersUserIdConversationsResponseData[]>([]);
@@ -127,9 +129,6 @@ function onSaveChatTitle() {
 // 挂载后做选中操作
 onMounted(async () => {
     try {
-        if (!userStore.token) {
-            return;
-        }
         const res = await usersUserIdConversations(userStore.token);
         historys.value = res;
     } catch (err) {
@@ -149,8 +148,13 @@ defineExpose<IChatHistoryRef>({
 
 <template>
     <div class="layout-aside-main">
+        <div class="history-title">
+            <el-text class="history-label">历史记录</el-text>
+            <el-icon class="close-icon" @click="() => chatHistoryStore.setShowHistory(!chatHistoryStore.show_history)">
+                <CloseBold />
+            </el-icon>
+        </div>
         <el-button :icon="Plus" class="create-chat-btn" @click="onCreateNewChat">新建对话</el-button>
-        <el-text class="history-label">历史记录</el-text>
         <ul class="history-list" ref="historyListUlRef">
             <li
                 v-for="item in historys"
@@ -190,19 +194,35 @@ defineExpose<IChatHistoryRef>({
 $btn-width-percent-100: 100%;
 
 .layout-aside-main {
+    background-color: #001529;
+    border-left: 1px solid rgba($color: #eee, $alpha: 0.3);
     flex: 1;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    .create-chat-btn {
-        width: $btn-width-percent-100;
-        justify-content: flex-start;
+    padding-top: 16px;
+
+    .history-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        height: 32px;
+        color: #fff;
+
+        .history-label {
+            color: #fff;
+        }
+
+        .close-icon:hover {
+            cursor: pointer;
+        }
     }
 
-    .history-label {
-        margin: 16px 0 0;
-        display: inline-block;
-        width: 100%;
+    .create-chat-btn {
+        // width: $btn-width-percent-100;
+        justify-content: flex-start;
+        margin: 12px 16px;
     }
 
     .history-list {
