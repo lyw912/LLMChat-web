@@ -49,7 +49,7 @@ function setActiveIndex() {
         >
             <div class="app-chat-aside-left">
                 <div class="logo">
-                    FuFan-Chat
+                    LLM-Chat
                     <el-tooltip content="历史记录">
                         <el-icon
                             class="history_icon"
