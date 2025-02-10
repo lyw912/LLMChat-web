@@ -3,10 +3,12 @@
     <div class="chat-loading" />
     <div class="chat-loading-sprites" />
 </template>
+
 <style lang="scss" scoped>
 $loading-size: 24; // loading大小
 $loading-img-count: 143; // loading图片循环一次的数量
 $regex: "%";
+
 /* 定义@keyframes规则 */
 @keyframes chat-loading-animation {
     @for $i from 0 through $loading-img-count {
@@ -15,6 +17,7 @@ $regex: "%";
         }
     }
 }
+
 /* 应用动画到目标元素 */
 .chat-loading {
     width: #{$loading-size}px;
@@ -22,6 +25,7 @@ $regex: "%";
     background-size: cover;
     animation: chat-loading-animation 6s infinite; /* 设置动画名称、时长和循环方式 */
 }
+
 /* 定义@keyframes规则 */
 @keyframes chat-loading-sprites-animation {
     @for $i from 0 through $loading-img-count {
@@ -30,6 +34,7 @@ $regex: "%";
         }
     }
 }
+
 .chat-loading-sprites {
     width: #{$loading-size}px;
     height: #{$loading-size}px;

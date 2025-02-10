@@ -6,6 +6,7 @@ import { conversationsApi } from "@/api/conversations";
 import ChatRecord from "./ChatRecord.vue";
 import GPTModelSelect from "@/components/GPTModelSelect/index.vue";
 import { useUserStore } from "@/store/modules/user";
+import { useChatHistoryStore } from "@/store/modules/chatHistory";
 
 export interface IChatRecordsRef {
     onChangeChat(id: string, name: string): void;
@@ -13,6 +14,7 @@ export interface IChatRecordsRef {
 
 const chatStore = useChatStore();
 const userStore = useUserStore();
+const chatHistoryStore = useChatHistoryStore();
 const chatRecordsRef = ref<HTMLDivElement | null>(null);
 const inputValue = ref<string>("");
 
@@ -42,6 +44,7 @@ async function onSend(val: string) {
         return;
     }
     !chatStore.conversation_id && (await onCreateNewChat(query));
+    chatHistoryStore.getConversations();
     // 发送接受消息
     try {
         chatStore.chat({ query });
@@ -63,7 +66,9 @@ onMounted(() => {
         </div>
         <div>
             <div class="chat-input-top">
-                <el-button class="new-chat">新建对话</el-button>
+                <el-tootip content="即将上线">
+                    <el-button class="new-chat" disabled>新建对话</el-button>
+                </el-tootip>
                 <GPTModelSelect />
             </div>
             <QuillEditor class="quill-editor" :value="inputValue" :onEnter="onSend" />
