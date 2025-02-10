@@ -127,9 +127,6 @@ function onSaveChatTitle() {
 // 挂载后做选中操作
 onMounted(async () => {
     try {
-        if (!userStore.token) {
-            return;
-        }
         const res = await usersUserIdConversations(userStore.token);
         historys.value = res;
     } catch (err) {

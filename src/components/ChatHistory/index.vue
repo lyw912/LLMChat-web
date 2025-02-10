@@ -2,11 +2,12 @@
 import { ref, reactive, onMounted, nextTick, defineExpose } from "vue";
 import { Plus, Edit, Delete } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { usersUserIdConversations } from "@/api/users";
+// import { usersUserIdConversations } from "@/api/users";
 import type * as Users from "@/api/users/types/users";
 import { conversationsApi } from "@/api/conversations";
 import { useUserStore } from "@/store/modules/user";
 import { useChatStore } from "@/store/modules/chat";
+import { useChatHistoryStore } from "@/store/modules/chatHistory";
 
 interface Props {
     onSelectChatHistory?(id: string, name?: string): void;
@@ -18,6 +19,7 @@ export interface IChatHistoryRef {
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const chatHistoryStore = useChatHistoryStore();
 const props = defineProps<Props>();
 const historyListUlRef = ref<HTMLDivElement | null>(null);
 const historys = ref<Users.UsersUserIdConversationsResponseData[]>([]);
@@ -126,20 +128,17 @@ function onSaveChatTitle() {
 
 // 挂载后做选中操作
 onMounted(async () => {
-    try {
-        if (!userStore.token) {
-            return;
-        }
-        const res = await usersUserIdConversations(userStore.token);
-        historys.value = res;
-    } catch (err) {
-        console.error(err);
-    }
-    if (historys.value[0]) {
-        onClickChatHistory(historys.value[0].id, historys.value[0].name);
-    } else {
-        onCreateNewChat();
-    }
+    // try {
+    //     const res = await usersUserIdConversations(userStore.token);
+    //     historys.value = res;
+    // } catch (err) {
+    //     console.error(err);
+    // }
+    // if (historys.value[0]) {
+    //     onClickChatHistory(historys.value[0].id, historys.value[0].name);
+    // } else {
+    //     onCreateNewChat();
+    // }
 });
 
 defineExpose<IChatHistoryRef>({
@@ -149,11 +148,16 @@ defineExpose<IChatHistoryRef>({
 
 <template>
     <div class="layout-aside-main">
+        <div class="history-title">
+            <el-text class="history-label">历史记录</el-text>
+            <el-icon class="close-icon" @click="() => chatHistoryStore.setShowHistory(!chatHistoryStore.show_history)">
+                <CloseBold />
+            </el-icon>
+        </div>
         <el-button :icon="Plus" class="create-chat-btn" @click="onCreateNewChat">新建对话</el-button>
-        <el-text class="history-label">历史记录</el-text>
         <ul class="history-list" ref="historyListUlRef">
             <li
-                v-for="item in historys"
+                v-for="item in chatHistoryStore.conversations"
                 :key="item.id"
                 @mouseenter="hoverId = item.id"
                 @mouseleave="hoverId = undefined"
@@ -190,40 +194,59 @@ defineExpose<IChatHistoryRef>({
 $btn-width-percent-100: 100%;
 
 .layout-aside-main {
+    background-color: #001529;
+    border-left: 1px solid rgba($color: #eee, $alpha: 0.3);
     flex: 1;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    .create-chat-btn {
-        width: $btn-width-percent-100;
-        justify-content: flex-start;
+    padding-top: 16px;
+
+    .history-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        height: 32px;
+        color: #fff;
+
+        .history-label {
+            color: #fff;
+        }
+
+        .close-icon:hover {
+            cursor: pointer;
+        }
     }
 
-    .history-label {
-        margin: 16px 0 0;
-        display: inline-block;
-        width: 100%;
+    .create-chat-btn {
+        // width: $btn-width-percent-100;
+        justify-content: flex-start;
+        margin: 12px 8px 0;
     }
 
     .history-list {
         padding-inline-start: 0;
         flex: 1;
         overflow: auto;
+        padding: 0 8px;
         > li {
             display: flex;
             align-items: center;
             padding: 0 16px;
             /* justify-content: center; */
             height: 36px;
-            background-color: var(--el-fill-color-lighter);
-            margin: 8px 0 0;
+            // background-color: var(--el-fill-color-lighter);
+            // margin: 8px 0 0;
             /* color: var(--el-color-info); */
             border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
+            color: #fff;
 
             &:hover {
-                background-color: var(--el-color-primary-light-8);
+                // background-color: var(--el-color-primary-light-8);
+                background-color: #252728;
             }
 
             &:nth-of-type(1) {
@@ -249,7 +272,8 @@ $btn-width-percent-100: 100%;
         }
 
         .active {
-            background-color: var(--el-color-primary-light-8);
+            // background-color: var(--el-color-primary-light-8);
+            background-color: #252728;
         }
     }
 }
