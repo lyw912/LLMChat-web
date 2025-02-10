@@ -4,10 +4,19 @@ import type * as Chat from "./types/chat";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 /** 聊天对话接口 */
+// export function chatApi(data: Chat.ChatRequestData) {
+//   return request<Chat.ChatResponseData>({
+//     url: "http://192.168.110.131:8000/api/chat",
+//     method: "post",
+//     data
+//   })
+// }
+
+/** 聊天对话接口 */
 export function chatApi(data: Chat.ChatRequestData, options?: Chat.ChatFetchEventOptions) {
     const ctrl = new AbortController();
     const bodyStr = JSON.stringify(data);
-    // http://127.0.0.1:16000
+    // http://192.168.110.131:8000
     fetchEventSource("/api/chat", {
         method: "POST",
         headers: {
@@ -46,6 +55,7 @@ export function chatKnowledgeApi(data: Chat.ChatRequestData, options?: Chat.Chat
         }
     });
 }
+
 /** AI搜索对话接口 */
 export function chatAISearchApi(data: Chat.ChatRequestData, options?: Chat.ChatFetchEventOptions) {
     const ctrl = new AbortController();
@@ -67,6 +77,7 @@ export function chatAISearchApi(data: Chat.ChatRequestData, options?: Chat.ChatF
         }
     });
 }
+
 /** 推荐对话接口 */
 export function chatRecommendApi(data: Chat.KnowledgeChatRequestData, options?: Chat.ChatFetchEventOptions) {
     const ctrl = new AbortController();
