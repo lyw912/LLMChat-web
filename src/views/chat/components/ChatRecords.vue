@@ -1,25 +1,18 @@
 <script setup lang="ts">
-import { ref, nextTick, defineExpose } from "vue"; // onMounted, onBeforeUnmount
+import { ref, nextTick, onMounted } from "vue";
 import QuillEditor from "@/components/RichTextEditor/index.vue";
 import { useChatStore } from "@/store/modules/chat";
-import { type ChatRequestData, IMessageData } from "@/api/chat/types/chat";
-import { conversationsConversationsIdMessagesApi } from "@/api/conversations";
-import type * as Conversations from "@/api/conversations/types/conversations";
+import { conversationsApi } from "@/api/conversations";
 import ChatRecord from "./ChatRecord.vue";
-import { ElMessage } from "element-plus";
-
-// interface Props {
-//     onSetChatTitle(id: string, name: string): void;
-// }
+import GPTModelSelect from "@/components/GPTModelSelect/index.vue";
+import { useUserStore } from "@/store/modules/user";
 
 export interface IChatRecordsRef {
     onChangeChat(id: string, name: string): void;
 }
 
 const chatStore = useChatStore();
-// const props = defineProps<Props>();
-let conversation_id = "";
-const chatRecords = ref<Conversations.ConversationsConversationsIdMessagesResponseData[]>([]);
+const userStore = useUserStore();
 const chatRecordsRef = ref<HTMLDivElement | null>(null);
 const inputValue = ref<string>("");
 
@@ -33,76 +26,46 @@ function onScrollBottom() {
     });
 }
 
+// 新建对话
+async function onCreateNewChat(query?: string) {
+    const name = query || "新对话";
+    const chat_type = chatStore.chat_type;
+    const res = await conversationsApi({ user_id: userStore.token, name, chat_type });
+    chatStore.onSelectConversation(res.id);
+    // onScrollTop();
+}
+
 // 发送消息
 async function onSend(val: string) {
-    if (!conversation_id) {
-        ElMessage.warning("请先新建对话");
-        return;
-    }
     const query = val.trim();
     if (!query) {
         return;
     }
-    const chatRecord: Conversations.ConversationsConversationsIdMessagesResponseData = {
-        id: "", // 消息ID
-        conversation_id, // 会话ID
-        chat_type: chatStore.chat_type, // 会话类型
-        query, // 用户输入
-        response: "", // AI回答
-        create_time: ""
-    };
-    chatRecords.value.push(chatRecord);
-    // 重新设置会话名称
-    // if (chatRecords.value.length === 1) {
-    //     props.onSetChatTitle(conversation_id, query);
-    // }
-    onScrollBottom();
+    !chatStore.conversation_id && (await onCreateNewChat(query));
     // 发送接受消息
     try {
-        const params = {
-            query: val,
-            conversation_id
-        } as ChatRequestData;
-        chatStore.chat(params, {
-            onmessage: async (data: IMessageData) => {
-                const res = JSON.parse(data.data);
-                chatRecords.value.map(async (item) => {
-                    if (res && (item.id === res?.message_id || item.id === "") && res.text) {
-                        item.response += res.text;
-                        item.id = res.message_id;
-                    }
-                });
-                onScrollBottom();
-            }
-        });
+        chatStore.chat({ query });
     } catch (err) {
         console.error(err);
     }
 }
 
-// 切换聊天&缓存之前的聊天
-async function onChangeChat(id: string) {
-    if (!id) return;
-    conversation_id = id;
-    const res = await conversationsConversationsIdMessagesApi(id);
-    chatRecords.value = res;
-    inputValue.value = "";
+onMounted(() => {
     onScrollBottom();
-}
-
-// 将内部方法暴露给外部
-defineExpose<IChatRecordsRef>({
-    onChangeChat
+    chatStore.setOnScrollBottom(onScrollBottom);
 });
 </script>
 
 <template>
     <div class="main-center">
         <div class="chat-records" ref="chatRecordsRef">
-            <ChatRecord v-for="(record, index) in chatRecords" :key="index" :data="record" />
+            <ChatRecord v-for="(record, index) in chatStore.chat_history" :key="index" :data="record" />
         </div>
         <div>
-            <el-button class="new-chat">新建对话</el-button>
+            <div class="chat-input-top">
+                <el-button class="new-chat">新建对话</el-button>
+                <GPTModelSelect />
+            </div>
             <QuillEditor class="quill-editor" :value="inputValue" :onEnter="onSend" />
         </div>
     </div>
@@ -123,8 +86,11 @@ defineExpose<IChatRecordsRef>({
         padding: 24px 0;
     }
 
-    .new-chat {
+    .chat-input-top {
+        display: flex;
+        align-items: center;
         margin-bottom: 8px;
+        gap: 8px;
     }
 
     .quill-editor {
